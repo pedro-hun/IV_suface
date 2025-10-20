@@ -163,7 +163,7 @@ class ExcelReader:
         Returns
         -------
         pd.DataFrame
-            Dataframe with 'days_to_expiry' and 'time_to_expiry' columns.
+            Dataframe with 'DaysToExpiry' and 'time_to_expiry' columns.
         """
         data = self.attach_option_type(force_reload=force_reload)
 
@@ -208,8 +208,8 @@ class ExcelReader:
             business_days.append(int(delta_days))
             annualised.append(delta_days / trading_days_per_year)
 
-        data["days_to_expiry"] = business_days
-        data["time_to_expiry"] = annualised
+        data["DaysToExpiry"] = business_days
+        data["TimeToExpiry"] = annualised
         self._data = data
         return data.copy()
 
@@ -226,7 +226,7 @@ class ExcelReader:
         force_reload: bool = False,
     ) -> pd.DataFrame:
         """
-        Add a 'forward_price' column based on the cost-of-carry model.
+        Add a 'ForwardPrice' column based on the cost-of-carry model.
 
         Parameters
         ----------
@@ -239,7 +239,7 @@ class ExcelReader:
         Returns
         -------
         pd.DataFrame
-            Dataframe augmented with the 'forward_price' column.
+            Dataframe augmented with the 'ForwardPrice' column.
         """
         if risk_free_rate <= -1.0:
             raise ValueError("risk_free_rate must be greater than -100%.")
@@ -254,12 +254,12 @@ class ExcelReader:
             force_reload=force_reload,
         )
 
-        if "time_to_expiry" not in data:
+        if "TimeToExpiry" not in data:
             raise RuntimeError("Time-to-expiry data is required before computing forward prices.")
 
-        data["forward_price"] = data["spot_price"] * np.power(
+        data["ForwardPrice"] = data["SpotPrice"] * np.power(
             1 + risk_free_rate,
-            data["time_to_expiry"],
+            data["TimeToExpiry"],
         )
         self._data = data
         return data.copy()
